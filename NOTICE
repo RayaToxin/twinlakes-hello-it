@@ -1,0 +1,5 @@
+Twin Lakes "IT Help" menu is a configured fork of Hello-IT.
+Hello-IT: Copyright (c) 2015, Yoann Gini. Licensed under the BSD 3-Clause License (see LICENSE).
+Reachability.m: Copyright (c) 2011, Tony Million. BSD 2-Clause (see the file header).
+Twin Lakes modifications (deploy/, Docs/twinlakes-fork-plan.md, build script changes): Copyright (c) 2026 Twin Lakes LLC.
+This fork keeps the upstream bundle identifier (com.github.ygini.Hello-IT) and is not endorsed by the Hello-IT project.
