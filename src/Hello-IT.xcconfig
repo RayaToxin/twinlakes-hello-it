@@ -11,16 +11,20 @@
 
 #include ".BuildVersion.xcconfig"
 
-DEVELOPMENT_TEAM = CRXPBZF3N4
+// Twin Lakes fork: no org Developer ID yet (plan F8). Builds sign with the local
+// self-signed "HelpDesk Client Dev" identity; override in CustomSettings.xcconfig or
+// via the CUSTOM_* environment variables read by package/BuildAndPackage.command.
+DEVELOPMENT_TEAM =
 PRODUCT_BUNDLE_IDENTIFIER_BASE = com.github.ygini
 
-MARKETING_VERSION = 1.7.0
+MARKETING_VERSION = 1.7.1
 BUILD_VERSION = $(GIT_BUILD_VERSION:default=0)
 
-CODE_SIGN_IDENTITY = Mac Developer
-CODE_SIGN_STYLE = Automatic
+CODE_SIGN_IDENTITY = HelpDesk Client Dev
+CODE_SIGN_STYLE = Manual
 
-MACOSX_DEPLOYMENT_TARGET = 10.14.6
+// Twin Lakes fork: fleet floor is macOS 10.13.6 (plan F3); Xcode 26 SDK minimum is 10.13.
+MACOSX_DEPLOYMENT_TARGET = 10.13
 
 // If you want to sign your own copy of Hello IT, overload the DEVELOPMENT_TEAM key with your own Team ID in a CustomSettings.xcconfig file next to this one
 #include? "CustomSettings.xcconfig"
