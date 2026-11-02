@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# postinstall for the Twin Lakes "IT Help" menu (Hello IT) package.
+#
+# 1. Remove the Munki/AutoPkg-era copy at /Applications/Hello IT.app and any
+#    per-user LaunchAgent left behind by it.
+# 2. Lock down the custom scripts (root:wheel, 0755) so denyUserWritableScript
+#    in the profile is satisfied.
+# 3. (Re)start the LaunchAgent for the console user so the menu appears at
+#    once; exit 0 even with nobody logged in (login will start it).
+
+LABEL="com.github.ygini.hello-it"
+AGENT_PLIST="/Library/LaunchAgents/${LABEL}.plist"
+APP_PATH="/Applications/Utilities/Hello IT.app"
+OLD_APP_PATH="/Applications/Hello IT.app"
+SUPPORT_DIR="/Library/Application Support/com.github.ygini.hello-it"
+
+log() { echo "[hello-it postinstall] $*"; }
+
+# --- 1. old installs ---------------------------------------------------------
+
+if [ -d "${OLD_APP_PATH}" ]; then
+    log "Removing old copy at ${OLD_APP_PATH}"
+    pkill -f "${OLD_APP_PATH}/Contents/MacOS/Hello IT" 2>/dev/null
+    rm -rf "${OLD_APP_PATH}"
+fi
+
+# --- 2. permissions ------------------------------------------------------------
+
+if [ -d "${SUPPORT_DIR}" ]; then
+    chown -R root:wheel "${SUPPORT_DIR}"
+    chmod 755 "${SUPPORT_DIR}" "${SUPPORT_DIR}/CustomScripts" 2>/dev/null
+    chmod 755 "${SUPPORT_DIR}"/CustomScripts/*.sh 2>/dev/null
+    chmod 755 "${SUPPORT_DIR}"/uninstall.sh 2>/dev/null
+fi
+
+chown root:wheel "${AGENT_PLIST}" 2>/dev/null
+chmod 644 "${AGENT_PLIST}" 2>/dev/null
+chown -R root:wheel "${APP_PATH}" 2>/dev/null
+
+# --- 3. (re)start for the console user ------------------------------------------
+
+console_user=$(stat -f '%Su' /dev/console 2>/dev/null)
+
+case "${console_user}" in
+    ""|root|loginwindow|_mbsetupuser)
+        log "No console user logged in; the agent will start at next login"
+        exit 0
+        ;;
+esac
+
+uid=$(id -u "${console_user}" 2>/dev/null)
+if [ -z "${uid}" ]; then
+    log "Cannot resolve uid for ${console_user}; the agent will start at next login"
+    exit 0
+fi
+
+user_home=$(dscl . -read "/Users/${console_user}" NFSHomeDirectory 2>/dev/null | awk '{print $2}')
+if [ -n "${user_home}" ] && [ -f "${user_home}/Library/LaunchAgents/${LABEL}.plist" ]; then
+    log "Removing stale per-user LaunchAgent for ${console_user}"
+    launchctl bootout "gui/${uid}/${LABEL}" 2>/dev/null
+    rm -f "${user_home}/Library/LaunchAgents/${LABEL}.plist"
+fi
+
+log "Restarting ${LABEL} for ${console_user} (uid ${uid})"
+launchctl bootout "gui/${uid}/${LABEL}" 2>/dev/null
+sleep 1
+
+if launchctl bootstrap "gui/${uid}" "${AGENT_PLIST}" 2>/dev/null; then
+    log "Bootstrapped via launchctl bootstrap"
+else
+    # 10.15 and earlier: bootstrap can fail from an installer context; fall back to load
+    log "bootstrap failed, falling back to launchctl load"
+    launchctl asuser "${uid}" launchctl unload "${AGENT_PLIST}" 2>/dev/null
+    launchctl asuser "${uid}" launchctl load -w "${AGENT_PLIST}" 2>/dev/null
+fi
+
+exit 0
