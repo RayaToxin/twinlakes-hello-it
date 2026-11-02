@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<!-- Payload 1: managed preferences for Hello IT (menu definition). Forced = user cannot override. -->
+		<dict>
+			<key>PayloadType</key>
+			<string>com.apple.ManagedClient.preferences</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>PayloadIdentifier</key>
+			<string>org.twinlakesllc.hello-it.preferences</string>
+			<key>PayloadUUID</key>
+			<string>384BBDF8-616F-4371-8FC2-17F4D9E76B76</string>
+			<key>PayloadDisplayName</key>
+			<string>IT Help menu (Hello IT preferences)</string>
+			<key>PayloadEnabled</key>
+			<true/>
+			<key>PayloadContent</key>
+			<dict>
+				<key>com.github.ygini.Hello-IT</key>
+				<dict>
+					<key>Forced</key>
+					<array>
+						<dict>
+							<key>mcx_preference_settings</key>
+							<dict>
+								<key>functionIdentifier</key>
+								<string>public.submenu</string>
+								<key>denyUserWritableScript</key>
+								<true/>
+								<key>settings</key>
+								<dict>
+									<key>title</key>
+									<string>IT Help</string>
+									<key>content</key>
+									<array>
+										<dict>
+											<key>functionIdentifier</key>
+											<string>public.script.item</string>
+											<key>settings</key>
+											<dict>
+												<key>title</key>
+												<string>Internet: checking…</string>
+												<key>script</key>
+												<string>org.twinlakesllc.hello-it.network.sh</string>
+												<key>repeat</key>
+												<integer>60</integer>
+												<key>network</key>
+												<true/>
+											</dict>
+										</dict>
+										<dict>
+											<key>functionIdentifier</key>
+											<string>public.script.item</string>
+											<key>settings</key>
+											<dict>
+												<key>title</key>
+												<string>Local IP: …</string>
+												<key>script</key>
+												<string>com.github.ygini.hello-it.ip.sh</string>
+												<key>options</key>
+												<array>
+													<string>-m</string>
+													<string>2</string>
+												</array>
+												<key>repeat</key>
+												<integer>60</integer>
+												<key>network</key>
+												<true/>
+											</dict>
+										</dict>
+										<dict>
+											<key>functionIdentifier</key>
+											<string>public.script.item</string>
+											<key>settings</key>
+											<dict>
+												<key>title</key>
+												<string>Hostname: …</string>
+												<key>script</key>
+												<string>org.twinlakesllc.hello-it.hostname.sh</string>
+												<key>repeat</key>
+												<integer>300</integer>
+											</dict>
+										</dict>
+										<dict>
+											<key>functionIdentifier</key>
+											<string>public.separator</string>
+										</dict>
+										<dict>
+											<key>functionIdentifier</key>
+											<string>public.submenu</string>
+											<key>settings</key>
+											<dict>
+												<key>title</key>
+												<string>Support</string>
+												<key>content</key>
+												<array>
+													<dict>
+														<key>functionIdentifier</key>
+														<string>public.open.resource</string>
+														<key>settings</key>
+														<dict>
+															<key>title</key>
+															<string>Twin Lakes Tech Support</string>
+															<key>URL</key>
+															<string>https://www.twinlakesllc.org/support</string>
+														</dict>
+													</dict>
+													<dict>
+														<key>functionIdentifier</key>
+														<string>public.open.resource</string>
+														<key>settings</key>
+														<dict>
+															<key>title</key>
+															<string>Live Support (Google Meet)</string>
+															<key>URL</key>
+															<string>https://meet.google.com/meet/aqb-ncnn-ajr</string>
+														</dict>
+													</dict>
+												</array>
+											</dict>
+										</dict>
+									</array>
+								</dict>
+							</dict>
+						</dict>
+					</array>
+				</dict>
+			</dict>
+		</dict>
+		<!-- Payload 2: managed Login Item (macOS 13+; ignored by older systems). Keeps the Hello IT
+		     LaunchAgent enabled and prevents users from switching it off in Login Items.
+		     Switch RuleType to TeamIdentifier once the build is signed with a Developer ID. -->
+		<dict>
+			<key>PayloadType</key>
+			<string>com.apple.servicemanagement</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>PayloadIdentifier</key>
+			<string>org.twinlakesllc.hello-it.loginitem</string>
+			<key>PayloadUUID</key>
+			<string>7C6FFD94-1737-4648-9ADD-FEF9779EC2A2</string>
+			<key>PayloadDisplayName</key>
+			<string>IT Help menu (managed Login Item)</string>
+			<key>PayloadEnabled</key>
+			<true/>
+			<key>Rules</key>
+			<array>
+				<dict>
+					<key>RuleType</key>
+					<string>Label</string>
+					<key>RuleValue</key>
+					<string>com.github.ygini.hello-it</string>
+					<key>Comment</key>
+					<string>Hello IT LaunchAgent (/Library/LaunchAgents/com.github.ygini.hello-it.plist)</string>
+				</dict>
+			</array>
+		</dict>
+	</array>
+	<key>PayloadDescription</key>
+	<string>Configures the Twin Lakes "IT Help" menu-bar item (Hello IT): Internet state and network name, local IP, hostname, and Support links. Also pre-approves the Hello IT login item on macOS 13 and later.</string>
+	<key>PayloadDisplayName</key>
+	<string>IT Help – Config</string>
+	<key>PayloadIdentifier</key>
+	<string>org.twinlakesllc.hello-it</string>
+	<key>PayloadOrganization</key>
+	<string>Twin Lakes LLC</string>
+	<key>PayloadRemovalDisallowed</key>
+	<false/>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>D8C7D83C-EABE-4569-A790-8263A63CD6AE</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>
